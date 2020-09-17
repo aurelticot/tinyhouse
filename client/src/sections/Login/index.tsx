@@ -26,8 +26,9 @@ export const Login = ({ setViewer }: Props) => {
     LOG_IN,
     {
       onCompleted: (data) => {
-        if (data?.logIn) {
+        if (data?.logIn?.token) {
           setViewer(data.logIn);
+          sessionStorage.setItem("token", data.logIn.token);
           displaySuccessNotification("You've successfully logged in!");
         }
       },
@@ -62,7 +63,7 @@ export const Login = ({ setViewer }: Props) => {
 
   if (logInData?.logIn) {
     const { id: viewerId } = logInData.logIn;
-    return <Redirect to={`/user/${viewerId}`} />
+    return <Redirect to={`/user/${viewerId}`} />;
   }
 
   const logInErrorBannerElement = logInError ? (
