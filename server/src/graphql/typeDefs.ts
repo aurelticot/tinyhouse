@@ -14,11 +14,6 @@ export const typeDefs = gql`
     result: [Booking!]!
   }
 
-  type Listings {
-    total: Int!
-    result: [Booking!]!
-  }
-
   enum ListingType {
     APARTMENT
     HOUSE
@@ -39,6 +34,11 @@ export const typeDefs = gql`
     bookingsIndex: String!
     price: Int!
     numOfGuests: Int!
+  }
+
+  type Listings {
+    total: Int!
+    result: [Listing!]!
   }
 
   type User {
