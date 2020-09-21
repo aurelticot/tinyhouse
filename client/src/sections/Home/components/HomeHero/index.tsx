@@ -23,6 +23,7 @@ export const HomeHero = ({ onSearch }: Props) => {
           placeholder="Search 'San Fransisco'"
           size="large"
           className="home-hero__search-input"
+          enterButton
           onSearch={onSearch}
         />
       </div>
