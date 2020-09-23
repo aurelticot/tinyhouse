@@ -1,31 +1,59 @@
 import React from "react";
-import { Avatar, Button, Card, Divider, Typography } from "antd";
+import { Avatar, Button, Card, Divider, Tag, Typography } from "antd";
 import { User as UserData } from "../../../../lib/graphql/queries/User/__generated__/User";
+import { formatListingPrice } from "../../../../lib/utils";
 
 interface Props {
   user: UserData["user"];
   viewerIsUser: boolean;
 }
 
+const stripeAuthUrl = `https://dashboard.stripe.com/oauth/authorize?response_type=code&client_id=${process.env.REACT_APP_S_CLIENT_ID}&scope=read_write`;
 const { Paragraph, Text, Title } = Typography;
 
 export const UserProfile = ({ user, viewerIsUser }: Props) => {
+  const redirectToStripe = () => {
+    window.location.href = stripeAuthUrl;
+  };
+
+  const additionalDetails = user.hasWallet ? (
+    <>
+      <Paragraph>
+        <Tag color="green">Stripe Registered</Tag>
+      </Paragraph>
+      <Paragraph>
+        Income Earned: <Text strong>{user.income ? formatListingPrice(user.income) : `$0`}</Text>
+      </Paragraph>
+      <Button type="primary" className="user-profile__details-cta">
+        Disconnect Stripe
+      </Button>
+      <Paragraph type="secondary">
+        By disconnecting, you won't be able to receive <Text strong>any further payments</Text>. This will prevent users
+        from booking listings that you might have already created.
+      </Paragraph>
+    </>
+  ) : (
+    <>
+      <Paragraph>Interested in becoming a TinyHouse host? Register with your Stripe account!</Paragraph>
+      <Button type="primary" className="user-profile__details-cta" onClick={redirectToStripe}>
+        Connect with Stripe
+      </Button>
+      <Paragraph type="secondary">
+        TinyHouse uses{" "}
+        <a href="https://stripe.com/en-US/connect" target="_blank" rel="noopener noreferrer">
+          Stripe
+        </a>{" "}
+        to help transfer your earnings in a secure and trusted manner.
+      </Paragraph>
+    </>
+  );
+
   const additionalDetailsSection = viewerIsUser ? (
     <>
       <Divider />
       <div className="user-profile__details">
         <Title level={4}>Additional Details</Title>
-        <Paragraph>Interested in becoming a TinyHouse host? Register with your Stripe account!</Paragraph>
-        <Button type="primary" className="user-profile__details-cta">
-          Connect with Stripe
-        </Button>
-        <Paragraph type="secondary">
-          TinyHouse uses{" "}
-          <a href="https://stripe.com/en-US/connect" target="_blank" rel="noopener noreferrer">
-            Stripe
-          </a>{" "}
-          to help transfer your earnings in a secure and trusted manner.
-        </Paragraph>
+        {additionalDetails}
       </div>
     </>
   ) : null;

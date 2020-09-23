@@ -22,6 +22,7 @@ const PAGE_LIMIT = 4;
 export const User = ({ viewer, match }: Props & RouteComponentProps<MatchParams>) => {
   const [listingsPage, setListingsPage] = useState(1);
   const [bookingsPage, setBookingsPage] = useState(1);
+
   const { data, loading, error } = useQuery<UserData, UserVariables>(USER, {
     variables: {
       id: match.params.id,
@@ -30,6 +31,11 @@ export const User = ({ viewer, match }: Props & RouteComponentProps<MatchParams>
       limit: PAGE_LIMIT,
     },
   });
+
+  const stripeError = new URL(window.location.href).searchParams.get("stripe_error");
+  const stripeErrorBanner = stripeError ? (
+    <ErrorBanner description="We had an issue connecting with Stripe. Please try again soon." />
+  ) : null;
 
   if (loading) {
     return (
@@ -76,6 +82,7 @@ export const User = ({ viewer, match }: Props & RouteComponentProps<MatchParams>
 
   return (
     <Content className="user">
+      {stripeErrorBanner}
       <Row gutter={12} justify="space-between">
         <Col xs={24}>{userProfileElement}</Col>
         <Col xs={24}>
