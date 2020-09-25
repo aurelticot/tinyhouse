@@ -14,13 +14,14 @@ import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__gene
 import googleLogo from "./assets/google_logo.jpg";
 
 interface Props {
+  viewer: Viewer;
   setViewer: (viewer: Viewer) => void;
 }
 
 const { Content } = Layout;
 const { Text, Title } = Typography;
 
-export const Login = ({ setViewer }: Props) => {
+export const Login = ({ viewer, setViewer }: Props) => {
   const client = useApolloClient();
   const [logIn, { data: logInData, loading: logInLoading, error: logInError }] = useMutation<LogInData, LogInVariables>(
     LOG_IN,
@@ -52,6 +53,10 @@ export const Login = ({ setViewer }: Props) => {
       displayErrorMessage("Sorry! We weren't able to log you in. Please try again later!");
     }
   };
+
+  if (viewer.id) {
+    return <Redirect to={`/user/${viewer.id}`} />;
+  }
 
   if (logInLoading) {
     return (
