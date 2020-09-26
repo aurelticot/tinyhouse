@@ -10,7 +10,23 @@ export const Stripe = {
       grant_type: "authorization_code",
       code,
     });
-
     return response;
+  },
+  charge: async (amount: number, source: string, stripeAccount: string) => {
+    const result = await client.charges.create(
+      {
+        amount,
+        currency: "usd",
+        source,
+        application_fee_amount: Math.round(amount * 0.05),
+      },
+      {
+        stripeAccount,
+      }
+    );
+
+    if (result.status !== "succeeded") {
+      throw new Error("Failed to create charge with Stripe!");
+    }
   },
 };
