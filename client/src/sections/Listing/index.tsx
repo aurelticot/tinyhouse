@@ -6,28 +6,48 @@ import { ErrorBanner, PageSkeleton } from "../../lib/components";
 import { LISTING } from "../../lib/graphql/queries";
 import { Listing as ListingData, ListingVariables } from "../../lib/graphql/queries/Listing/__generated__/Listing";
 import { Col, Layout, Row } from "antd";
-import { ListingBookings, ListingDetails, ListingCreateBooking } from "./components";
+import {
+  ListingBookings,
+  ListingDetails,
+  ListingCreateBooking,
+  WrappedListingCreateBookingModal as ListingCreateBookingModal,
+} from "./components";
+import { Viewer } from "../../lib/types";
 
 interface MatchParams {
   id: string;
 }
 
+interface Props {
+  viewer: Viewer;
+}
+
 const { Content } = Layout;
 const PAGE_LIMIT = 3;
 
-export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
+export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchParams>) => {
   const [bookingsPage, setBookingsPage] = useState(1);
-
+  const [modalVisible, setModalVisible] = useState(false);
   const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
 
-  const { data, loading, error } = useQuery<ListingData, ListingVariables>(LISTING, {
+  const { data, loading, error, refetch } = useQuery<ListingData, ListingVariables>(LISTING, {
     variables: {
       id: match.params.id,
       bookingsPage,
       limit: PAGE_LIMIT,
     },
   });
+
+  const clearBookingData = () => {
+    setModalVisible(false);
+    setCheckInDate(null);
+    setCheckOutDate(null);
+  };
+
+  const handleListingRefetch = async () => {
+    await refetch();
+  };
 
   if (loading) {
     return (
@@ -61,13 +81,31 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
 
   const listingCreateBooking = listing ? (
     <ListingCreateBooking
+      viewer={viewer}
+      host={listing.host}
       price={listing.price}
+      bookingsIndex={listing.bookingsIndex}
       checkInDate={checkInDate}
       setCheckInDate={setCheckInDate}
       checkOutDate={checkOutDate}
       setCheckOutDate={setCheckOutDate}
+      setModalVisible={setModalVisible}
     />
   ) : null;
+
+  const listingCreateBookingModalElement =
+    listing && checkInDate && checkOutDate ? (
+      <ListingCreateBookingModal
+        id={listing.id}
+        price={listing.price}
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        checkInDate={checkInDate}
+        checkOutDate={checkOutDate}
+        clearBookingData={clearBookingData}
+        handleListingRefetch={handleListingRefetch}
+      />
+    ) : null;
 
   return (
     <Content className="listings">
@@ -80,6 +118,7 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
           {listingCreateBooking}
         </Col>
       </Row>
+      {listingCreateBookingModalElement}
     </Content>
   );
 };
