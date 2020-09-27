@@ -12,7 +12,14 @@ export const Stripe = {
     });
     return response;
   },
-  charge: async (amount: number, source: string, stripeAccount: string) => {
+  disconnect: async (stripeUserId: string): Promise<stripe.OAuthDeauthorization> => {
+    const result = await client.oauth.deauthorize({
+      client_id: `${process.env.S_CLIENT_ID}`,
+      stripe_user_id: stripeUserId,
+    });
+    return result;
+  },
+  charge: async (amount: number, source: string, stripeAccount: string): Promise<void> => {
     const result = await client.charges.create(
       {
         amount,
