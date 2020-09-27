@@ -1,6 +1,6 @@
 import React from "react";
 import moment, { Moment } from "moment";
-import { DatePicker, Button, Card, Divider, Typography } from "antd";
+import { DatePicker, Button, Card, Divider, Typography, Tooltip } from "antd";
 import { Listing as ListingData } from "../../../../lib/graphql/queries/Listing/__generated__/Listing";
 import { formatListingPrice, displayErrorMessage } from "../../../../lib/utils";
 import { Viewer } from "../../../../lib/types";
@@ -50,10 +50,9 @@ export const ListingCreateBooking = ({
       return false;
     }
     const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf("day"));
+    const dateIsMoreThanThreeMonthsAhead = moment(currentDate).isAfter(moment().endOf("day").add(90, "days"));
 
-    // keep room for additional constraints
-
-    return dateIsBeforeEndOfDay || dateIsBooked(currentDate);
+    return dateIsBeforeEndOfDay || dateIsMoreThanThreeMonthsAhead || dateIsBooked(currentDate);
   };
 
   const verifyAndSetCheckoutDate = (selectedCheckOutDate: Moment | null) => {
@@ -115,6 +114,15 @@ export const ListingCreateBooking = ({
               format={"YYYY/MM/DD"}
               disabledDate={disabledDate}
               disabled={checkInInputDisabled}
+              renderExtraFooter={() => {
+                return (
+                  <div>
+                    <Text type="secondary" className="ant-calendar-footer-text">
+                      You can only book a listing within 90 days from today.
+                    </Text>
+                  </div>
+                );
+              }}
             />
           </div>
           <div className="listing-booking__card-date-picker">
@@ -126,6 +134,26 @@ export const ListingCreateBooking = ({
               format={"YYYY/MM/DD"}
               disabledDate={disabledDate}
               disabled={checkOutInputDisabled}
+              dateRender={(current) => {
+                if (moment(current).isSame(checkInDate, "day")) {
+                  return (
+                    <Tooltip title="Check in date">
+                      <div className="ant-calendar-date ant-calendar-date__check-in">{current.date()}</div>
+                    </Tooltip>
+                  );
+                } else {
+                  return <div className="ant-calendar-date">{current.date()}</div>;
+                }
+              }}
+              renderExtraFooter={() => {
+                return (
+                  <div>
+                    <Text type="secondary" className="ant-calendar-footer-text">
+                      You can only book a listing within 90 days from today.
+                    </Text>
+                  </div>
+                );
+              }}
             />
           </div>
         </div>

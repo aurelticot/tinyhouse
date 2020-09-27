@@ -6,6 +6,8 @@ import { User, Booking, Listing, Database, BookingsIndex } from "../../../lib/ty
 import { authorize } from "../../../lib/utils";
 import { CreateBookingArgs } from "./types";
 
+const millisecondsPerDay = 86400000;
+
 const resolveBookingsIndex = (bookingsIndex: BookingsIndex, checkIn: string, checkOut: string): BookingsIndex => {
   let dateCursor = new Date(checkIn);
   const checkOutDate = new Date(checkOut);
@@ -31,7 +33,7 @@ const resolveBookingsIndex = (bookingsIndex: BookingsIndex, checkIn: string, che
       throw new Error("Selected dates can't overlap dates that have already been booked.");
     }
 
-    dateCursor = new Date(dateCursor.getTime() + 86400000);
+    dateCursor = new Date(dateCursor.getTime() + millisecondsPerDay);
   }
 
   return newBookingsIndex;
@@ -67,8 +69,18 @@ export const bookingResolvers: IResolvers = {
         }
 
         // check that checkOut is not before checkIn
+        const today = new Date();
         const checkInDate = new Date(checkIn);
         const checkOutDate = new Date(checkOut);
+
+        if (checkInDate.getTime() > today.getTime() + 90 * millisecondsPerDay) {
+          throw new Error("Check in date cannot be more than 90 days from today");
+        }
+
+        if (checkOutDate.getTime() > today.getTime() + 90 * millisecondsPerDay) {
+          throw new Error("Check out date cannot be more than 90 days from today");
+        }
+
         if (checkOutDate < checkInDate) {
           throw new Error("Check out date cannot be before check in date");
         }
@@ -77,7 +89,7 @@ export const bookingResolvers: IResolvers = {
         const bookingsIndex = resolveBookingsIndex(listing.bookingsIndex, checkIn, checkOut);
 
         // get total price to charge
-        const totalPrice = listing.price * ((checkOutDate.getTime() - checkInDate.getTime()) / 86400000 + 1);
+        const totalPrice = listing.price * ((checkOutDate.getTime() - checkInDate.getTime()) / millisecondsPerDay + 1);
 
         // get user document of host of listing
         const host = await db.users.findOne({ _id: listing.host });
