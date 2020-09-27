@@ -9,6 +9,7 @@ import { LOG_IN } from "../../lib/graphql/mutations";
 import { AUTH_URL } from "../../lib/graphql/queries";
 import { LogIn as LogInData, LogInVariables } from "../../lib/graphql/mutations/LogIn/__generated__/LogIn";
 import { AuthUrl as AuthUrlData } from "../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl";
+import { useScrollToTop } from "../../lib/hooks";
 
 // Image assets
 import googleLogo from "./assets/google_logo.jpg";
@@ -44,6 +45,8 @@ export const Login = ({ viewer, setViewer }: Props) => {
       logInRef.current({ variables: { input: { code } } });
     }
   }, []);
+
+  useScrollToTop();
 
   const handleAuthorize = async () => {
     try {

@@ -7,6 +7,7 @@ import { Listings as ListingsData, ListingsVariables } from "../../lib/graphql/q
 import { HomeHero, HomeListings, HomeListingsSkeleton } from "./components";
 import { Col, Row, Layout, Typography } from "antd";
 import { displayErrorMessage } from "../../lib/utils";
+import { useScrollToTop } from "../../lib/hooks";
 
 import mapBackground from "./assets/map-background.jpg";
 import sanFransiscoImage from "./assets/san-fransisco.jpg";
@@ -27,6 +28,8 @@ export const Home = ({ history }: RouteComponentProps) => {
     },
     fetchPolicy: "cache-and-network",
   });
+
+  useScrollToTop();
 
   const renderListingsSection = () => {
     if (loading) {

@@ -12,6 +12,7 @@ import { Link, Redirect } from "react-router-dom";
 import { ListingType } from "../../lib/graphql/globalTypes";
 import { iconColor, displayErrorMessage, displaySuccessNotification } from "../../lib/utils";
 import { UploadChangeParam } from "antd/lib/upload";
+import { useScrollToTop } from "../../lib/hooks";
 
 const { Content } = Layout;
 const { Text, Title } = Typography;
@@ -33,6 +34,8 @@ export const Host = ({ viewer }: Props) => {
       displayErrorMessage("Sorry, We weren't able to create your listing. Please try again later.");
     },
   });
+
+  useScrollToTop();
 
   const handleImageUpload = (info: UploadChangeParam) => {
     const { file } = info;

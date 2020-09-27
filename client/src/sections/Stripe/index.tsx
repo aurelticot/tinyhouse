@@ -9,6 +9,7 @@ import {
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { Viewer } from "../../lib/types";
 import { displaySuccessNotification } from "../../lib/utils";
+import { useScrollToTop } from "../../lib/hooks";
 
 const { Content } = Layout;
 
@@ -48,6 +49,8 @@ export const Stripe = ({ viewer, setViewer, history }: Props & RouteComponentPro
       history.replace("/login");
     }
   }, [history]);
+
+  useScrollToTop();
 
   if (data && data.connectStripe) {
     return <Redirect to={`/user/${viewer.id}`} />;

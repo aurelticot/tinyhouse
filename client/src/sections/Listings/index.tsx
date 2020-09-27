@@ -7,6 +7,7 @@ import { ListingsFilters, ListingsPagination, ListingsSkeleton } from "./compone
 import { LISTINGS } from "../../lib/graphql/queries";
 import { Listings as ListingsData, ListingsVariables } from "../../lib/graphql/queries/Listings/__generated__/Listings";
 import { ListingsFilter } from "../../lib/graphql/globalTypes";
+import { useScrollToTop } from "../../lib/hooks";
 
 const { Content } = Layout;
 const { Paragraph, Text, Title } = Typography;
@@ -36,6 +37,8 @@ export const Listings = ({ match }: RouteComponentProps<MatchParams>) => {
     setPage(1);
     locationRef.current = match.params.location;
   }, [match.params.location]);
+
+  useScrollToTop();
 
   if (loading) {
     return (

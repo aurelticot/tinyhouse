@@ -13,6 +13,7 @@ import {
   WrappedListingCreateBookingModal as ListingCreateBookingModal,
 } from "./components";
 import { Viewer } from "../../lib/types";
+import { useScrollToTop } from "../../lib/hooks";
 
 interface MatchParams {
   id: string;
@@ -38,6 +39,8 @@ export const Listing = ({ viewer, match }: Props & RouteComponentProps<MatchPara
       limit: PAGE_LIMIT,
     },
   });
+
+  useScrollToTop();
 
   const clearBookingData = () => {
     setModalVisible(false);
