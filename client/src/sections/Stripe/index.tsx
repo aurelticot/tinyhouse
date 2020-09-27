@@ -6,7 +6,7 @@ import {
   ConnectStripe as ConnectStripeData,
   ConnectStripeVariables,
 } from "../../lib/graphql/mutations/ConnectStripe/__generated__/ConnectStripe";
-import { Redirect, RouteComponentProps } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { Viewer } from "../../lib/types";
 import { displaySuccessNotification } from "../../lib/utils";
 import { useScrollToTop } from "../../lib/hooks";
@@ -18,7 +18,7 @@ interface Props {
   setViewer: (viewer: Viewer) => void;
 }
 
-export const Stripe = ({ viewer, setViewer, history }: Props & RouteComponentProps) => {
+export const Stripe = ({ viewer, setViewer }: Props) => {
   const [connectStripe, { data, loading, error }] = useMutation<ConnectStripeData, ConnectStripeVariables>(
     CONNECT_STRIPE,
     {
@@ -33,6 +33,8 @@ export const Stripe = ({ viewer, setViewer, history }: Props & RouteComponentPro
       },
     }
   );
+
+  const history = useHistory();
 
   const connectStripeRef = useRef(connectStripe);
 
