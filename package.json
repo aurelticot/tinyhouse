@@ -1,0 +1,31 @@
+{
+  "name": "tinyhouse",
+  "version": "0.1.0",
+  "description": "TinyHouse application",
+  "private": true,
+  "engines": {
+    "node": "14.0.0"
+  },
+  "scripts": {
+    "clean": "rm -rf {.,server,client}/node_modules/ {.,server,client}/build/ dist/",
+    "postinstall:server": "cd server/ && npm install",
+    "postinstall:client": "cd client/ && npm install",
+    "postinstall": "npm run postinstall:server && npm run postinstall:client",
+    "prebuild": "rm -rf dist/",
+    "build:server": "cd server/ && npm run build && mv build/ ../dist/",
+    "build:client": "cd client/ && npm run build && mv build/ ../dist/client/",
+    "build": "npm run build:server && npm run build:client",
+    "start:dev:server": "cd server/ && npm start",
+    "start:dev:client": "cd client/ && npm start",
+    "start:dev": "concurrently --kill-others-on-fail \"npm run start:dev:server\" \"npm run start:dev:client\"",
+    "start:build": "node -r dotenv/config dist/index.js dotenv_config_path=./server/.env",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "server": "file:./server",
+    "client": "file:./client"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0"
+  }
+}
